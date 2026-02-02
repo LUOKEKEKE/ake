@@ -1,0 +1,2981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铁路培训基地学员管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #003d82;
+            --primary-light: #0052ad;
+            --primary-dark: #002952;
+            --accent: #ff6b00;
+            --accent-light: #ff8533;
+            --success: #00a86b;
+            --warning: #ffa500;
+            --danger: #dc3545;
+            --bg-main: #f5f7fa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6c757d;
+            --border: #e0e6ed;
+            --shadow: rgba(0, 61, 130, 0.08);
+            --shadow-lg: rgba(0, 61, 130, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            letter-spacing: 1px;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 导航标签 */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            background: var(--bg-card);
+            padding: 0.8rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px var(--shadow);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: rgba(0, 61, 130, 0.05);
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px var(--shadow-lg);
+            opacity: 0.8;
+        }
+
+        .nav-tab.active:active {
+            opacity: 0.6;
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* 内容卡片 */
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 30px var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+            margin-left: 0.2rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--bg-main);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 61, 130, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 2rem;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-main);
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary);
+            background: rgba(0, 61, 130, 0.05);
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .file-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px var(--shadow-lg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-lg);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #008c5a;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* 学员证/名片样式 */
+        .student-card {
+            background: linear-gradient(135deg, #ffe4cc 0%, #ffd4aa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px var(--shadow-lg);
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 107, 0, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .student-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .card-header-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .card-type {
+            background: var(--accent);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-photo {
+            width: 100px;
+            height: 120px;
+            border-radius: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-info-item {
+            margin-bottom: 0.8rem;
+        }
+
+        .card-info-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 0.2rem;
+        }
+
+        .card-info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-qr {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .qr-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* 状态卡片 */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 12px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 24px var(--shadow-lg);
+        }
+
+        .status-card.success {
+            border-left-color: var(--success);
+        }
+
+        .status-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .status-card.danger {
+            border-left-color: var(--danger);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .status-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* 考勤记录 */
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-main);
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .attendance-item:hover {
+            background: rgba(0, 61, 130, 0.05);
+            transform: translateX(4px);
+        }
+
+        .attendance-date {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .attendance-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(0, 168, 107, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(255, 165, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--bg-main);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* 座位图 */
+        .seat-map {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .seat {
+            aspect-ratio: 1;
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .seat:hover {
+            border-color: var(--primary);
+            background: rgba(0, 61, 130, 0.05);
+        }
+
+        .seat.occupied {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .seat-number {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .seat-name {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        /* 课程表 */
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px var(--shadow);
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .schedule-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-table tr:hover td {
+            background: rgba(0, 61, 130, 0.02);
+        }
+
+        /* 学习资料列表 */
+        .material-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: var(--bg-main);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .material-item:hover {
+            background: rgba(0, 61, 130, 0.05);
+            transform: translateX(4px);
+        }
+
+        .material-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .material-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* 心得分享卡片 */
+        .review-card {
+            background: var(--bg-main);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .review-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .review-content {
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .rating {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .star {
+            color: #ffc107;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* 客服对话框 */
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--bg-main);
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .chat-bubble {
+            max-width: 70%;
+            padding: 0.9rem 1.2rem;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 61, 130, 0.1);
+        }
+
+        .chat-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px var(--shadow-lg);
+        }
+
+        /* 步骤指示器 */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* 表单网格布局 */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .seat-map {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .chat-bubble {
+                max-width: 85%;
+            }
+
+            .schedule-table {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 打印样式 */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .header,
+            .nav-tabs,
+            .btn,
+            .chat-container,
+            .card-header,
+            .form-group,
+            .form-row,
+            .btn-group,
+            #registrationForm,
+            .steps,
+            section {
+                display: none !important;
+            }
+
+            .student-card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                margin: 0;
+                max-width: 100%;
+            }
+            
+            #cardPreview {
+                display: block !important;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .container {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">🚄</div>
+                <div class="logo-text">
+                    <h1>铁路培训基地学员管理系统</h1>
+                    <p>Railway Training Management System</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">学</div>
+                <div>
+                    <div style="font-weight: 600;">欢迎您<span id="welcomeName">学员</span></div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">学员</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 导航标签 -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('registration')">📝 报到注册</button>
+            <button class="nav-tab" onclick="showSection('checkin')">🏠 入住分配</button>
+            <button class="nav-tab" onclick="showSection('attendance')">✅ 每日打卡</button>
+            <button class="nav-tab" onclick="showSection('leave')">📋 请假系统</button>
+            <button class="nav-tab" onclick="showSection('exam')">📖 考试信息</button>
+            <button class="nav-tab" onclick="showSection('meal')">🍽️ 餐票管理</button>
+            <button class="nav-tab" onclick="showSection('access')">🚪 门禁系统</button>
+            <button class="nav-tab" onclick="showSection('phone')">📱 手机管理</button>
+            <button class="nav-tab" onclick="showSection('learning')">📚 学习中心</button>
+            <button class="nav-tab" onclick="showSection('seat')">💺 座位分配</button>
+            <button class="nav-tab" onclick="showSection('schedule')">📅 课程安排</button>
+            <button class="nav-tab" onclick="showSection('review')">💬 心得分享</button>
+            <button class="nav-tab" onclick="showSection('edit')">✏️ 信息修改</button>
+            <button class="nav-tab" onclick="showSection('service')">👥 人工客服</button>
+        </nav>
+
+        <!-- 1. 报到注册 -->
+        <section id="registration" class="content-section active">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <h2 class="card-title">学员报到注册</h2>
+                </div>
+
+                <div class="steps">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">填写信息</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">上传照片</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">生成证件</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-label">打印领取</div>
+                    </div>
+                </div>
+
+                <form id="registrationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">姓名 <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="studentName" placeholder="请输入姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">性别 <span class="required">*</span></label>
+                            <select class="form-select" id="studentGender" required>
+                                <option value="">请选择</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">身份证号 <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="studentId" placeholder="请输入身份证号" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">联系电话 <span class="required">*</span></label>
+                            <input type="tel" class="form-input" id="studentPhone" placeholder="请输入手机号" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">培训等级 <span class="required">*</span></label>
+                            <select class="form-select" id="studentLevel" required>
+                                <option value="">请选择</option>
+                                <option value="高级工">高级工</option>
+                                <option value="中级工">中级工</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">所属单位</label>
+                            <input type="text" class="form-input" id="studentUnit" placeholder="请输入所属单位">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">一寸近期照片 <span class="required">*</span></label>
+                        <div class="file-upload">
+                            <label class="file-upload-label" for="studentPhoto">
+                                <span style="font-size: 2rem;">📷</span>
+                                <span>点击上传一寸证件照</span>
+                            </label>
+                            <input type="file" id="studentPhoto" accept="image/*" onchange="previewPhoto(this)">
+                        </div>
+                        <div id="photoPreview" class="file-preview"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="generateCard()">
+                            🎫 生成学员证
+                        </button>
+                        <button type="reset" class="btn btn-outline">
+                            🔄 重置表单
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 学员证预览 -->
+            <div id="cardPreview" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎫</div>
+                        <h2 class="card-title">学员证预览</h2>
+                    </div>
+                    
+                    <div class="student-card" id="studentCardElement">
+                        <div class="card-header-badge">
+                            <div class="card-logo">RAILWAY</div>
+                            <div class="card-type">学员证</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-photo" id="cardPhotoDisplay">
+                                <span style="font-size: 2rem; color: #ccc;">📷</span>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-info-item">
+                                    <div class="card-info-label">姓名</div>
+                                    <div class="card-info-value" id="cardName">-</div>
+                                </div>
+                                <div class="card-info-item">
+                                    <div class="card-info-label">性别</div>
+                                    <div class="card-info-value" id="cardGender">-</div>
+                                </div>
+                                <div class="card-info-item">
+                                    <div class="card-info-label">培训等级</div>
+                                    <div class="card-info-value" id="cardLevel">-</div>
+                                </div>
+                                <div class="card-info-item">
+                                    <div class="card-info-label">学号</div>
+                                    <div class="card-info-value" id="cardStudentNo">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-qr">
+                            <div class="qr-code" id="qrcodeContainer"></div>
+                            <div class="qr-label">学号二维码，用于扫码识别身份</div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-accent" onclick="printCard()">
+                            🖨️ 打印学员证
+                        </button>
+                        <button class="btn btn-success" onclick="downloadCard()">
+                            💾 下载学员证
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadQR()">
+                            🔗 下载二维码
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 其他模块的HTML代码继续... -->
+        <!-- 由于篇幅限制,我会在JavaScript部分添加所有功能 -->
+
+    </div>
+
+    <script>
+        // 全局变量
+        let currentRating = 0;
+        let studentData = {};
+        let attendanceCount = 0; // 打卡次数
+        let leaveRecordList = []; // 请假记录
+        let mealRecords = { breakfast: 0, lunch: 0, dinner: 0 }; // 就餐记录
+        let allocatedSeats = {}; // 已分配的座位
+        let nextSeatNumber = 1; // 下一个可分配的座位号
+        let reviews = []; // 心得记录
+        let bedAssignments = {}; // 床位分配记录
+        let nextBedNumber = 1; // 下一个可分配的床号
+        let registrationCount = 0; // 注册计数，用于生成学号
+        let attendanceRecords = []; // 所有打卡记录
+        let lastCheckinDate = null; // 上次打卡日期（用于限制一天只能打一次）
+        let currentRoom = null; // 当前分配的房间
+        let currentBed = null; // 当前分配的床位
+        let checkinStatus = '未入住'; // 入住状态
+
+        // 保存学员数据到Excel的函数
+        function saveStudentData(studentInfo) {
+            // 尝试发送到Flask服务器（如果服务器运行）
+            const apiUrl = 'http://localhost:5000/api/save_student';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(studentInfo)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 数据已成功保存到Excel');
+                } else {
+                    console.warn('⚠️ 保存数据到Excel失败:', data.message);
+                    // 服务器不可用，尝试本地存储
+                    saveStudentDataLocally(studentInfo);
+                }
+            })
+            .catch(error => {
+                console.warn('⚠️ 无法连接到服务器，使用本地存储:', error.message);
+                // 服务器不可用，尝试本地存储
+                saveStudentDataLocally(studentInfo);
+            });
+        }
+
+        // 本地存储学员数据的备选方案
+        function saveStudentDataLocally(studentInfo) {
+            try {
+                let students = JSON.parse(localStorage.getItem('students') || '[]');
+                students.push({
+                    ...studentInfo,
+                    registrationTime: new Date().toLocaleString('zh-CN')
+                });
+                localStorage.setItem('students', JSON.stringify(students));
+                console.log('✅ 数据已保存到本地存储');
+            } catch (error) {
+                console.error('❌ 本地存储失败:', error);
+            }
+        }
+
+        // 切换内容区域
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // 添加点击效果
+            event.target.style.opacity = '0.6';
+            setTimeout(() => {
+                event.target.style.opacity = '0.8';
+            }, 100);
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 照片预览
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="照片预览">`;
+                    
+                    // 更新步骤：将第1步标记为已完成，第2步标记为活跃
+                    const steps = document.querySelectorAll('.step');
+                    if (steps.length >= 2) {
+                        steps[0].classList.remove('active');
+                        steps[0].classList.add('completed');
+                        steps[1].classList.add('active');
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 生成学员证
+        function generateCard() {
+            try {
+                const name = document.getElementById('studentName').value;
+                const gender = document.getElementById('studentGender').value;
+                const idCard = document.getElementById('studentId').value;
+                const phone = document.getElementById('studentPhone').value;
+                const level = document.getElementById('studentLevel').value;
+                const unit = document.getElementById('studentUnit').value;
+                const photo = document.getElementById('studentPhoto').files[0];
+
+                if (!name || !gender || !idCard || !phone || !level || !photo) {
+                    alert('请填写所有必填项并上传照片!');
+                    return;
+                }
+
+                registrationCount++;
+                const studentNo = '2026' + String(registrationCount).padStart(2, '0');
+                studentData = { name, gender, idCard, phone, level, unit, studentNo };
+
+                // 获取姓氏
+                const surname = name.charAt(0);
+                
+                // 更新欢迎语和头像
+                const userAvatarEl = document.getElementById('userAvatar');
+                if (userAvatarEl) userAvatarEl.textContent = surname;
+                
+                const welcomeNameEl = document.getElementById('welcomeName');
+                if (welcomeNameEl) welcomeNameEl.textContent = surname + '学员';
+
+                // 更新信息修改表单的字段（如果存在）
+                const editNameEl = document.getElementById('editName');
+                if (editNameEl) editNameEl.value = name;
+                
+                const editPhoneEl = document.getElementById('editPhone');
+                if (editPhoneEl) editPhoneEl.value = phone;
+                
+                const editIdCardEl = document.getElementById('editIdCard');
+                if (editIdCardEl) editIdCardEl.value = idCard;
+                
+                const editUnitEl = document.getElementById('editUnit');
+                if (editUnitEl) editUnitEl.value = unit;
+
+                // 更新学员证显示信息
+                const cardNameEl = document.getElementById('cardName');
+                if (cardNameEl) cardNameEl.textContent = name;
+                
+                const cardGenderEl = document.getElementById('cardGender');
+                if (cardGenderEl) cardGenderEl.textContent = gender;
+                
+                const cardLevelEl = document.getElementById('cardLevel');
+                if (cardLevelEl) cardLevelEl.textContent = level;
+                
+                const cardStudentNoEl = document.getElementById('cardStudentNo');
+                if (cardStudentNoEl) cardStudentNoEl.textContent = studentNo;
+
+                // 处理照片
+                const cardPhotoDisplayEl = document.getElementById('cardPhotoDisplay');
+                if (cardPhotoDisplayEl) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        cardPhotoDisplayEl.innerHTML = `<img src="${e.target.result}" alt="学员照片">`;
+                        studentData.photoData = e.target.result;
+                    };
+                    reader.readAsDataURL(photo);
+                }
+
+                // 生成二维码
+                const qrcodeContainerEl = document.getElementById('qrcodeContainer');
+                if (qrcodeContainerEl) {
+                    qrcodeContainerEl.innerHTML = '';
+                    // 二维码只包含学号（学号是唯一标识，其他信息通过学号查询）
+                    const qrData = studentNo;
+                    new QRCode(qrcodeContainerEl, {
+                        text: qrData,
+                        width: 120,
+                        height: 120,
+                        colorDark: '#003d82',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                }
+
+                // 显示学员证预览
+                const cardPreviewEl = document.getElementById('cardPreview');
+                if (cardPreviewEl) {
+                    cardPreviewEl.style.display = 'block';
+                    setTimeout(() => {
+                        cardPreviewEl.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+
+                // 更新步骤：将第2步标记为已完成，第3步标记为活跃
+                const steps = document.querySelectorAll('.step');
+                if (steps.length >= 3) {
+                    steps[1].classList.remove('active');
+                    steps[1].classList.add('completed');
+                    steps[2].classList.add('active');
+                }
+
+                // 保存数据到Excel
+                saveStudentData(studentData);
+
+                alert('✅ 学员证生成成功!学号: ' + studentNo);
+            } catch (error) {
+                console.error('生成学员证出错:', error);
+                alert('生成学员证失败：' + error.message);
+            }
+        }
+
+        // 打印学员证
+        function printCard() {
+            // 更新步骤：将第3步标记为已完成，第4步标记为活跃
+            const steps = document.querySelectorAll('.step');
+            if (steps.length >= 4) {
+                steps[2].classList.remove('active');
+                steps[2].classList.add('completed');
+                steps[3].classList.add('active');
+            }
+            window.print();
+        }
+
+        // 下载学员证（与预览一致）
+        function downloadCard() {
+            if (!studentData.name) {
+                alert('请先生成学员证!');
+                return;
+            }
+            
+            // 获取预览中的QRCode canvas
+            const qrcodeCanvas = document.querySelector('#qrcodeContainer canvas');
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 600;
+            
+            // 绘制背景渐变
+            const gradient = ctx.createLinearGradient(0, 0, 400, 600);
+            gradient.addColorStop(0, '#ffe4cc');
+            gradient.addColorStop(1, '#ffd4aa');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 600);
+            
+            // 绘制Logo
+            ctx.fillStyle = '#003d82';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('RAILWAY', 20, 50);
+            
+            // 绘制学员证标签
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(260, 20, 120, 35);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('学员证', 320, 42);
+            
+            // 绘制照片
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(20, 80, 100, 120);
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
+            ctx.fillRect(20, 80, 100, 120);
+            
+            if (studentData.photoData) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 20, 80, 100, 120);
+                    finishDrawing();
+                };
+                img.src = studentData.photoData;
+            } else {
+                finishDrawing();
+            }
+            
+            function finishDrawing() {
+                // 绘制信息
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'left';
+                
+                ctx.fillText('姓名：' + studentData.name, 140, 100);
+                ctx.fillText('性别：' + studentData.gender, 140, 120);
+                ctx.fillText('等级：' + studentData.level, 140, 140);
+                ctx.fillText('学号：' + studentData.studentNo, 140, 160);
+                
+                ctx.font = '10px Arial';
+                ctx.fillText('身份证：' + studentData.idCard, 20, 220);
+                ctx.fillText('电话：' + studentData.phone, 20, 235);
+                ctx.fillText('单位：' + studentData.unit, 20, 250);
+                
+                // 绘制QR码
+                ctx.fillStyle = '#666';
+                ctx.font = '9px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('请使用此二维码进行各项操作', 200, 310);
+                
+                // 如果有QRCode Canvas，复制它
+                if (qrcodeCanvas) {
+                    try {
+                        ctx.drawImage(qrcodeCanvas, 130, 325, 140, 140);
+                    } catch(e) {
+                        // 如果复制失败，绘制学号代替
+                        ctx.fillStyle = '#003d82';
+                        ctx.fillRect(150, 330, 100, 100);
+                        ctx.fillStyle = 'white';
+                        ctx.font = 'bold 14px Arial';
+                        ctx.fillText(studentData.studentNo, 200, 380);
+                    }
+                }
+                
+                // 底部装饰线
+                ctx.fillStyle = '#ff6b00';
+                ctx.fillRect(20, 480, 360, 2);
+                
+                // 下载
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `学员证-${studentData.name}-${studentData.studentNo}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('✅ 学员证已下载!');
+                }, 'image/png');
+            }
+        }
+
+        // 下载二维码
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcodeContainer canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `学员证-${studentData.name}-${studentData.studentNo}.png`;
+                a.click();
+                alert('✅ 二维码已下载!');
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            console.log('铁路培训基地学员管理系统已加载');
+        });
+    </script>
+</body>
+</html>
+<!-- 下面是其余模块的HTML代码,请添加到之前HTML的相应位置 -->
+
+<!-- 2. 入住分配模块 -->
+<section id="checkin" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">🏠</div>
+            <h2 class="card-title">宿舍入住分配</h2>
+        </div>
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">已分配房间</span>
+                    <span class="status-icon">🏠</span>
+                </div>
+                <div class="status-value" id="roomNumber">-</div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">入住状态</span>
+                    <span class="status-icon">✅</span>
+                </div>
+                <div class="status-value" style="color: var(--success);" id="checkinStatus">未入住</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">学员姓名 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="checkinStudentName" placeholder="请输入学员姓名">
+        </div>
+        <div style="margin: 15px 0; padding: 12px; background: rgba(0, 61, 130, 0.08); border-left: 4px solid #003d82; border-radius: 4px;">
+            <p style="margin: 0; font-size: 13px; color: #666;">
+                <strong style="color: #003d82;">房间分配说明：</strong><br>
+                您已分配房间：<span style="background: #003d82; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;" id="roomDisplay">-</span> 号房 <span style="background: #ff6b00; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;" id="bedDisplay">-</span> 号床<br>
+                <span style="font-size: 12px; color: #999; margin-top: 4px; display: block;">例：3号房5号床=住在三号房间里的5号床位</span>
+            </p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="allocateRoom()">🔑 自动分配房间</button>
+            <button class="btn btn-success" style="background: var(--success);" onclick="confirmCheckin()">✅ 确认入住</button>
+            <button class="btn btn-outline" onclick="changeRoom()">🔄 换房</button>
+            <button class="btn btn-danger" style="background: #dc3545;" onclick="checkout()">🚪 退房</button>
+        </div>
+    </div>
+</section>
+
+<!-- 3. 每日打卡模块 -->
+<section id="attendance" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">✅</div>
+            <h2 class="card-title">每日考勤打卡</h2>
+        </div>
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="btn btn-primary" style="font-size: 1.2rem; padding: 1.5rem 3rem;" onclick="checkIn()">📷 立即打卡</button>
+        </div>
+        <div class="status-grid">
+            <div class="status-card success">
+                <div class="status-header">
+                    <span class="status-title">本月出勤</span>
+                    <span class="status-icon">📊</span>
+                </div>
+                <div class="status-value" id="attendanceDays">0</div>
+            </div>
+            <div class="status-card warning">
+                <div class="status-header">
+                    <span class="status-title">请假天数</span>
+                    <span class="status-icon">📋</span>
+                </div>
+                <div class="status-value" id="leaveDaysDisplay">0</div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">今日状态</span>
+                    <span class="status-icon">⏰</span>
+                </div>
+                <div class="status-value" id="todayAttendance" style="font-size: 1.3rem; color: var(--success);">未打卡</div>
+            </div>
+        </div>
+        <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; color: var(--primary);">最近打卡记录</h3>
+        <div id="attendanceRecords">
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">暂无打卡记录</div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. 请假系统 -->
+<section id="leave" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📋</div>
+            <h2 class="card-title">请假申请系统</h2>
+        </div>
+        <form id="leaveForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">请假类型 <span class="required">*</span></label>
+                    <select class="form-select" id="leaveType" required>
+                        <option value="">请选择</option>
+                        <option value="事假">事假</option>
+                        <option value="病假">病假</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">请假天数 <span class="required">*</span></label>
+                    <input type="number" class="form-input" id="leaveDays" min="1" placeholder="请输入天数" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">开始日期 <span class="required">*</span></label>
+                    <input type="date" class="form-input" id="leaveStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">结束日期 <span class="required">*</span></label>
+                    <input type="date" class="form-input" id="leaveEndDate" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">请假原因 <span class="required">*</span></label>
+                <textarea class="form-textarea" id="leaveReason" placeholder="请详细说明请假原因" required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">审批人 <span class="required">*</span></label>
+                    <select class="form-select" id="leaveApprover" required>
+                        <option value="">请选择</option>
+                        <option value="张老师（职教科）">张老师（职教科）</option>
+                        <option value="王老师（班主任）">王老师（班主任）</option>
+                        <option value="李老师（副班主任）">李老师（副班主任）</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="submitLeave()">📤 提交申请</button>
+                <button type="reset" class="btn btn-outline">🔄 重置</button>
+            </div>
+        </form>
+        <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; color: var(--primary);">历史请假记录</h3>
+        <div id="leaveRecords"></div>
+    </div>
+</section>
+
+<!-- 5. 考试信息 -->
+<section id="exam" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📖</div>
+            <h2 class="card-title">考试信息</h2>
+        </div>
+        <h3 style="margin-bottom: 1rem; color: var(--primary);">理论考试</h3>
+        <table class="schedule-table" style="margin-bottom: 2rem;">
+            <thead>
+                <tr>
+                    <th>考试项目</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>带班人</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>铁路基础知识理论考</td>
+                    <td>暂定</td>
+                    <td>太原</td>
+                    <td>张老师</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3 style="margin-bottom: 1rem; color: var(--primary);">实作考试</h3>
+        <table class="schedule-table" style="margin-bottom: 2rem;">
+            <thead>
+                <tr>
+                    <th>考试项目</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>带班人</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>设备操作实作考</td>
+                    <td>暂定</td>
+                    <td>忻州</td>
+                    <td>李老师</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="background: var(--bg-main); padding: 1.5rem; border-radius: 12px; margin-top: 1rem;">
+            <h4 style="color: var(--primary); margin-bottom: 1rem;">您的考试信息</h4>
+            <div style="display: grid; gap: 0.8rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">姓名：</span>
+                    <span id="examName" style="font-weight: 600;"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">身份证号：</span>
+                    <span id="examIdCard" style="font-weight: 600;"></span>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="updateExamInfo()">🔄 刷新考试信息</button>
+        </div>
+    </div>
+</section>
+
+<!-- 6. 餐票管理 -->
+<section id="meal" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">🍽️</div>
+            <h2 class="card-title">餐票管理</h2>
+        </div>
+        <div style="margin: 2rem 0;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary);">就餐核销</h3>
+            <div class="btn-group" style="flex-direction: row; gap: 1rem;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="useMealTicket('breakfast')">🌅 早餐 (6:00-8:00)</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="useMealTicket('lunch')">☀️ 午餐 (11:30-13:30)</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="useMealTicket('dinner')">🌙 晚餐 (17:30-19:30)</button>
+            </div>
+        </div>
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">早餐次数</span>
+                    <span class="status-icon">🌅</span>
+                </div>
+                <div class="status-value" id="breakfastCount">0</div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">午餐次数</span>
+                    <span class="status-icon">☀️</span>
+                </div>
+                <div class="status-value" id="lunchCount">0</div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">晚餐次数</span>
+                    <span class="status-icon">🌙</span>
+                </div>
+                <div class="status-value" id="dinnerCount">0</div>
+            </div>
+        </div>
+        <h3 style="margin: 2rem 0 1rem; color: var(--primary);">就餐记录</h3>
+        <div id="mealRecordsDisplay" style="max-height: 300px; overflow-y: auto;">
+            <div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 14px;">暂无就餐记录</div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. 门禁系统 -->
+<section id="access" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">🚪</div>
+            <h2 class="card-title">门禁系统</h2>
+        </div>
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">👤</div>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">人脸识别出入管理系统</p>
+            <button class="btn btn-primary" style="font-size: 1.1rem;" onclick="enrollFace()">📸 人脸录入</button>
+            <input type="file" id="facePhoto" accept="image/*" style="display: none;" onchange="uploadFacePhoto(this)">
+        </div>
+        <h3 style="margin: 2rem 0 1rem; color: var(--primary);">出入记录</h3>
+        <div id="accessRecords">
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">暂无记录</div>
+        </div>
+    </div>
+</section>
+
+<!-- 8. 手机管理 -->
+<section id="phone" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📱</div>
+            <h2 class="card-title">手机管理</h2>
+        </div>
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">手机状态</span>
+                    <span class="status-icon">📱</span>
+                </div>
+                <div class="status-value" id="phoneStatus" style="color: var(--success); font-size: 1.2rem;">在手</div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">存放柜号</span>
+                    <span class="status-icon">🔐</span>
+                </div>
+                <div class="status-value" id="phoneLocker">-</div>
+            </div>
+        </div>
+        <div style="margin: 2rem 0;">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">扫描学员证二维码来操作手机上交和领取</p>
+            <div class="btn-group" style="flex-direction: column;">
+                <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="submitPhone()">📤 上交手机</button>
+                <button class="btn btn-success" onclick="retrievePhone()">📥 领取手机</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 9. 学习中心 -->
+<section id="learning" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📚</div>
+            <h2 class="card-title">学习中心</h2>
+        </div>
+        <div id="learningMaterials">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                <p style="color: var(--text-secondary);">暂无学习资料</p>
+            </div>
+        </div>
+        <div style="margin-top: 2rem;">
+            <button class="btn btn-primary" style="width: 100%;" onclick="browseMaterials()">📖 浏览资料库</button>
+        </div>
+    </div>
+</section>
+
+<!-- 10. 座位分配 -->
+<section id="seat" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">💺</div>
+            <h2 class="card-title">座位分配</h2>
+        </div>
+        <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(0, 61, 130, 0.08); border-radius: 8px; border-left: 4px solid #003d82;">
+            <label class="form-label" style="margin-bottom: 0.5rem;">学员姓名 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="seatStudentName" placeholder="请输入您的姓名">
+        </div>
+        <div style="margin-bottom: 2rem;">
+            <div class="status-card" style="background: var(--bg-main);">
+                <div class="status-header">
+                    <span style="font-weight: 600;">您的座位</span>
+                </div>
+                <div style="font-size: 2rem; color: var(--primary); font-weight: 700; margin: 1rem 0;" id="mySeatNumber">-</div>
+                <p style="color: var(--text-secondary);" id="seatStatus">请输入姓名进行座位分配</p>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="allocateSeat()">💺 座位分配</button>
+        </div>
+        <div style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary);">座位分布图（8列×5行）</h3>
+            <div class="seat-map" id="seatMap" style="grid-template-columns: repeat(8, 1fr); gap: 0.8rem;">
+                <!-- 座位将由JavaScript动态生成 -->
+            </div>
+        </div>
+        <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="downloadSeatList()">📋 下载座位表</button>
+    </div>
+</section>
+
+<!-- 11. 课程安排 -->
+<section id="schedule" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📅</div>
+            <h2 class="card-title">课程安排</h2>
+        </div>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>星期</th>
+                    <th>上午</th>
+                    <th>下午</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleTableBody">
+                <!-- 由JavaScript动态生成 -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- 12. 心得分享 -->
+<section id="review" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">💬</div>
+            <h2 class="card-title">心得分享</h2>
+        </div>
+        <form id="reviewForm" style="margin-bottom: 2rem;">
+            <div class="form-group">
+                <label class="form-label">分享内容 <span class="required">*</span></label>
+                <textarea class="form-textarea" id="reviewContent" placeholder="请分享您的学习心得和收获" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">评分</label>
+                <div class="rating" id="reviewRating">
+                    <span class="star" onclick="setRating(1)" style="opacity: 0.3; cursor: pointer;">⭐</span>
+                    <span class="star" onclick="setRating(2)" style="opacity: 0.3; cursor: pointer;">⭐</span>
+                    <span class="star" onclick="setRating(3)" style="opacity: 0.3; cursor: pointer;">⭐</span>
+                    <span class="star" onclick="setRating(4)" style="opacity: 0.3; cursor: pointer;">⭐</span>
+                    <span class="star" onclick="setRating(5)" style="opacity: 0.3; cursor: pointer;">⭐</span>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="submitReview()">📤 发布分享</button>
+                <button type="reset" class="btn btn-outline">🔄 重置</button>
+            </div>
+        </form>
+        <h3 style="margin: 2rem 0 1rem; color: var(--primary);">历史分享</h3>
+        <div id="reviewList"></div>
+    </div>
+</section>
+
+<!-- 13. 信息修改 -->
+<section id="edit" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">✏️</div>
+            <h2 class="card-title">信息修改</h2>
+        </div>
+        <form id="editForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-input" id="editName" placeholder="姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系电话</label>
+                    <input type="tel" class="form-input" id="editPhone" placeholder="联系电话">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">身份证号</label>
+                    <input type="text" class="form-input" id="editIdCard" placeholder="身份证号" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">所属单位</label>
+                    <input type="text" class="form-input" id="editUnit" placeholder="所属单位">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="savePersonalInfo()">💾 保存修改</button>
+                <button type="reset" class="btn btn-outline">🔄 重置</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- 14. 人工客服 -->
+<section id="service" class="content-section">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">👥</div>
+            <h2 class="card-title">人工客服</h2>
+        </div>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message">
+                    <div class="chat-avatar">客</div>
+                    <div class="chat-bubble">您好！👋 欢迎咨询，请问有什么帮助吗？</div>
+                </div>
+                <div class="chat-message">
+                    <div class="chat-avatar">客</div>
+                    <div class="chat-bubble">如需帮助，请加客服QQ：1247282451</div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <div class="chat-input-group">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="请输入您的问题...">
+                    <button type="button" class="chat-send-btn" onclick="sendMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript功能脚本 -->
+<script>
+// 更新考试信息显示
+function updateExamInfo() {
+    if (!studentData.name || !studentData.idCard) {
+        alert('请先完成报到注册!');
+        return;
+    }
+    document.getElementById('examName').textContent = studentData.name;
+    document.getElementById('examIdCard').textContent = studentData.idCard;
+    alert('✅ 考试信息已更新');
+}
+
+// 分配房间 - 1-5号房，每个房间8个床位
+function allocateRoom() {
+    const studentName = document.getElementById('checkinStudentName').value;
+    if (!studentName) {
+        alert('请输入学员姓名!');
+        return;
+    }
+    
+    // 检查该学员是否已分配房间（相同姓名相同房间）
+    if (bedAssignments[studentName]) {
+        const existing = bedAssignments[studentName];
+        currentRoom = existing.room;
+        currentBed = existing.bed;
+        document.getElementById('roomNumber').textContent = existing.room + '-' + existing.bed;
+        document.getElementById('roomDisplay').textContent = existing.room;
+        document.getElementById('bedDisplay').textContent = existing.bed;
+        document.getElementById('checkinStatus').textContent = '未入住';
+        document.getElementById('checkinStatus').style.color = '#dc3545';
+        document.getElementById('checkinStudentName').value = '';
+        alert(`✅ 该学员已分配房间!\n房间号: ${existing.room}-${existing.bed}`);
+        return;
+    }
+    
+    // 计算房间和床位（1-5号房，每个8个床位）
+    const roomNum = Math.ceil(nextBedNumber / 8);
+    const bedNum = ((nextBedNumber - 1) % 8) + 1;
+    
+    if (roomNum > 5) {
+        alert('⚠️ 房间已满！');
+        return;
+    }
+    
+    currentRoom = roomNum;
+    currentBed = bedNum;
+    
+    bedAssignments[studentName] = {
+        room: roomNum,
+        bed: bedNum,
+        name: studentName
+    };
+    
+    nextBedNumber++;
+    
+    document.getElementById('roomNumber').textContent = roomNum + '-' + bedNum;
+    document.getElementById('roomDisplay').textContent = roomNum;
+    document.getElementById('bedDisplay').textContent = bedNum;
+    document.getElementById('checkinStatus').textContent = '未入住';
+    document.getElementById('checkinStatus').style.color = '#dc3545';
+    document.getElementById('checkinStudentName').value = '';
+    
+    alert(`✅ 房间分配成功!\n房间号: ${roomNum}-${bedNum}`);
+}
+
+// 确认入住
+function confirmCheckin() {
+    if (currentRoom === null || currentBed === null) {
+        alert('⚠️ 请先进行房间分配!');
+        return;
+    }
+    
+    document.getElementById('checkinStatus').textContent = '已入住';
+    document.getElementById('checkinStatus').style.color = 'var(--success)';
+    alert('✅ 入住确认成功！');
+}
+
+// 换房
+function changeRoom() {
+    const newRoomInput = prompt('请输入新房间号(1-5):');
+    if (!newRoomInput) return;
+    
+    const newRoom = parseInt(newRoomInput);
+    const newBed = prompt('请输入新床位号(1-8):');
+    if (!newBed) return;
+    
+    const newBedNum = parseInt(newBed);
+    
+    if (newRoom < 1 || newRoom > 5 || newBedNum < 1 || newBedNum > 8) {
+        alert('⚠️ 房间号或床位号无效!');
+        return;
+    }
+    
+    currentRoom = newRoom;
+    currentBed = newBedNum;
+    
+    document.getElementById('roomNumber').textContent = newRoom + '-' + newBedNum;
+    alert(`✅ 已换房成功!\n新房间号: ${newRoom}-${newBedNum}`);
+}
+
+// 退房
+function checkout() {
+    document.getElementById('checkinStatus').textContent = '已退房';
+    document.getElementById('checkinStatus').style.color = '#dc3545';
+    document.getElementById('roomNumber').textContent = '-';
+    currentRoom = null;
+    currentBed = null;
+    alert('✅ 已退房');
+}
+
+// 切换入住状态
+function toggleCheckinStatus() {
+    const status = document.getElementById('checkinStatus');
+    if (status.textContent === '已入住') {
+        status.textContent = '未入住';
+        status.style.color = '#dc3545';
+        alert('✅ 已取消入住');
+    } else if (status.textContent === '未入住') {
+        status.textContent = '已入住';
+        status.style.color = 'var(--success)';
+        alert('✅ 入住成功！');
+    }
+}
+
+// 打卡
+function checkIn() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+    const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+    // 检查是否已经打卡
+    if (lastCheckinDate === dateStr) {
+        alert('⚠️ 您今天已经打过卡了，请明天再来打卡！');
+        return;
+    }
+
+    attendanceCount++;
+    lastCheckinDate = dateStr; // 更新最后打卡日期
+
+    // 保存到打卡记录
+    attendanceRecords.push({
+        date: dateStr,
+        time: timeStr,
+        id: Date.now()
+    });
+
+    alert(`✅ 打卡成功!\n时间:${timeStr}`);
+    document.getElementById('todayAttendance').textContent = '已打卡';
+    document.getElementById('attendanceDays').textContent = attendanceCount;
+
+    // 更新打卡记录显示
+    displayAttendanceRecords();
+}
+
+// 显示所有打卡记录
+function displayAttendanceRecords() {
+    const recordsDiv = document.getElementById('attendanceRecords');
+    recordsDiv.innerHTML = '';
+    
+    if (attendanceRecords.length === 0) {
+        recordsDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">暂无打卡记录</div>';
+        return;
+    }
+    
+    attendanceRecords.forEach(record => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'attendance-item';
+        itemDiv.innerHTML = `
+            <div>
+                <div class="attendance-date">${record.date}</div>
+                <div class="attendance-time">${record.time}</div>
+            </div>
+            <span class="badge badge-success">已打卡</span>
+        `;
+        recordsDiv.appendChild(itemDiv);
+    });
+}
+
+// 请假申请
+function submitLeave() {
+    const leaveType = document.getElementById('leaveType').value;
+    const leaveDays = parseInt(document.getElementById('leaveDays').value);
+    const startDate = document.getElementById('leaveStartDate').value;
+    const endDate = document.getElementById('leaveEndDate').value;
+    const reason = document.getElementById('leaveReason').value;
+    const approver = document.getElementById('leaveApprover').value;
+    
+    if (!leaveType || !leaveDays || !startDate || !endDate || !reason || !approver) {
+        alert('请填写所有必填项!');
+        return;
+    }
+    
+    // 随机批准或拒绝
+    const approved = Math.random() > 0.3; // 70%概率批准
+    const status = approved ? '已通过' : '未通过';
+    const statusColor = approved ? 'var(--success)' : 'var(--danger)';
+    
+    // 生成请假条号：日期-学号-当日序号-类型标识
+    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const studentNo = studentData.studentNo || 'UNKNOWN';
+    const sameDay = leaveRecordList.filter(r => r.date === today).length + 1;
+    const typeTag = leaveType === '事假' ? 'S' : (leaveType === '病假' ? 'B' : 'O');
+    const certificateNo = `${today}-${studentNo}-${String(sameDay).padStart(2, '0')}-${typeTag}`;
+    
+    const leaveRecord = {
+        type: leaveType,
+        days: leaveDays,
+        startDate: startDate,
+        endDate: endDate,
+        reason: reason,
+        approver: approver,
+        status: status,
+        statusColor: statusColor,
+        id: Date.now(),
+        certificateNo: certificateNo,
+        date: today
+    };
+    
+    leaveRecordList.push(leaveRecord);
+    
+    // 更新请假天数
+    const totalLeaveDays = leaveRecordList.reduce((sum, record) => {
+        if (record.status === '已通过') return sum + record.days;
+        return sum;
+    }, 0);
+    document.getElementById('leaveDaysDisplay').textContent = totalLeaveDays;
+    
+    alert(`✅ 请假申请已提交!\n审批人: ${approver}\n状态: ${status}\n请假条号: ${certificateNo}`);
+    
+    // 显示请假条
+    generateLeaveCertificate(leaveRecord);
+    
+    // 显示历史记录
+    displayLeaveRecords();
+    document.getElementById('leaveForm').reset();
+}
+
+// 生成请假条
+function generateLeaveCertificate(leaveRecord) {
+    const certDiv = document.getElementById('leaveCertificate');
+    if (!certDiv) {
+        const div = document.createElement('div');
+        div.id = 'leaveCertificate';
+        document.querySelector('#leave .card').appendChild(div);
+    }
+    
+    const statusStyle = leaveRecord.status === '已通过' ? 
+        'background: var(--success); color: white;' : 
+        'background: var(--danger); color: white;';
+    
+    const certHTML = `
+        <div style="margin-top: 2rem; padding: 2rem; border: 3px dashed #ff6b00; border-radius: 8px; background: rgba(255, 234, 204, 0.3);">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0; color: #003d82; font-size: 20px;">请假条</h3>
+                <p style="margin: 0.5rem 0 0 0; color: #999; font-size: 12px;">Railway Training Base Leave Certificate</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">请假人：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${studentData.name || '-'}</span>
+                </div>
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">请假类型：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${leaveRecord.type}</span>
+                </div>
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">请假天数：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${leaveRecord.days}天</span>
+                </div>
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">开始日期：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${leaveRecord.startDate}</span>
+                </div>
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">结束日期：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${leaveRecord.endDate}</span>
+                </div>
+                <div style="padding: 0.8rem; border-bottom: 1px solid #ddd;">
+                    <span style="color: #666; font-size: 13px;">审批人：</span>
+                    <span style="color: #333; font-weight: bold; font-size: 14px;">${leaveRecord.approver}</span>
+                </div>
+            </div>
+            <div style="padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                <p style="margin: 0; color: #666; font-size: 12px; line-height: 1.6;">
+                    <strong>请假事由：</strong><br>${leaveRecord.reason}
+                </p>
+            </div>
+            <div style="text-align: center; padding: 1rem; border-radius: 4px; ${statusStyle}">
+                <span style="font-weight: bold; font-size: 16px;">审批结果：${leaveRecord.status}</span>
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 12px; color: #999;">
+                申请时间：${new Date().toLocaleString('zh-CN')}<br>
+                请假条号：${leaveRecord.certificateNo}
+            </div>
+        </div>
+    `;
+    
+    const certDiv2 = document.getElementById('leaveCertificate');
+    certDiv2.innerHTML = certHTML;
+}
+
+// 就餐
+function useMealTicket(mealType) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+    const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const mealTypeLabel = mealType === 'breakfast' ? '早上' : (mealType === 'lunch' ? '中午' : '晚上');
+    
+    // 初始化就餐记录数组
+    if (!window.mealRecordsList) {
+        window.mealRecordsList = [];
+    }
+    
+    // 检查当天是否已核销过该类型餐食
+    const sameTypeToday = window.mealRecordsList.filter(r => r.type === mealType && r.date === dateStr);
+    
+    if (sameTypeToday.length > 0) {
+        // 已经核销过，检查是否可以再次核销
+        const lastRecord = sameTypeToday[sameTypeToday.length - 1];
+        
+        // 检查是否超过12:00
+        if (now.getHours() < 12 || (now.getHours() === 12 && now.getMinutes() < 1)) {
+            alert(`⚠️ 每个餐食当天只能核销一次！\n您已在 ${lastRecord.time} 核销过${mealTypeLabel}。\n下一次核销请在今天12:00以后。`);
+            return;
+        }
+    }
+    
+    // 添加记录
+    window.mealRecordsList.push({
+        type: mealType,
+        typeLabel: mealTypeLabel,
+        time: timeStr,
+        date: dateStr,
+        timestamp: now.getTime()
+    });
+    
+    if (mealType === 'breakfast') {
+        mealRecords.breakfast++;
+        document.getElementById('breakfastCount').textContent = mealRecords.breakfast;
+    } else if (mealType === 'lunch') {
+        mealRecords.lunch++;
+        document.getElementById('lunchCount').textContent = mealRecords.lunch;
+    } else if (mealType === 'dinner') {
+        mealRecords.dinner++;
+        document.getElementById('dinnerCount').textContent = mealRecords.dinner;
+    }
+    
+    // 显示就餐记录
+    displayMealRecords();
+    alert(`✅ ${mealTypeLabel}已核销！时间：${dateStr} ${timeStr}`);
+}
+
+// 显示就餐记录
+function displayMealRecords() {
+    const recordsDiv = document.getElementById('mealRecordsDisplay');
+    
+    if (!window.mealRecordsList || window.mealRecordsList.length === 0) {
+        recordsDiv.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 14px;">暂无就餐记录</div>';
+        return;
+    }
+    
+    let html = '';
+    window.mealRecordsList.slice().reverse().forEach((record, index) => {
+        const icon = record.type === 'breakfast' ? '🌅' : (record.type === 'lunch' ? '☀️' : '🌙');
+        const bgColor = record.type === 'breakfast' ? 'rgba(255, 100, 50, 0.1)' : 
+                       (record.type === 'lunch' ? 'rgba(255, 180, 0, 0.1)' : 'rgba(100, 150, 255, 0.1)');
+        
+        html += `
+            <div style="padding: 0.8rem; margin: 0.5rem 0; background: ${bgColor}; border-left: 4px solid #ff6b00; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-weight: bold; margin-right: 0.5rem;">${icon} ${record.typeLabel}</span>
+                </div>
+                <span style="color: #666; font-size: 13px;">${record.date} ${record.time}</span>
+            </div>
+        `;
+    });
+    
+    recordsDiv.innerHTML = html;
+}
+
+// 人脸相关
+function enrollFace() { 
+    document.getElementById('facePhoto').click(); 
+}
+
+function uploadFacePhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    if (!studentData.name) {
+        alert('请先完成报到注册！');
+        return;
+    }
+    
+    // 读取照片并保存
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        studentData.facePhoto = e.target.result;
+        
+        // 记录人脸录入的日期和时间
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+        
+        // 添加到出入记录
+        if (!window.accessRecordsList) {
+            window.accessRecordsList = [];
+        }
+        
+        window.accessRecordsList.push({
+            type: '人脸录入',
+            date: dateStr,
+            time: timeStr,
+            name: studentData.name,
+            action: '人脸信息录入',
+            timestamp: now.getTime()
+        });
+        
+        displayAccessRecords();
+        alert(`✅ 人脸已录入！\n姓名：${studentData.name}\n录入时间：${dateStr} ${timeStr}`);
+        input.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function faceCheckin() { 
+    if (!studentData.name) {
+        alert('请先完成报到注册！');
+        return;
+    }
+    
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+    
+    if (!window.accessRecordsList) {
+        window.accessRecordsList = [];
+    }
+    
+    window.accessRecordsList.push({
+        type: '出入',
+        date: dateStr,
+        time: timeStr,
+        name: studentData.name,
+        action: '刷脸进入',
+        timestamp: now.getTime()
+    });
+    
+    displayAccessRecords();
+    alert(`✅ 刷脸记录已保存\n时间：${dateStr} ${timeStr}`);
+}
+
+// 显示出入记录
+function displayAccessRecords() {
+    const recordsDiv = document.getElementById('accessRecords');
+    
+    if (!window.accessRecordsList || window.accessRecordsList.length === 0) {
+        recordsDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">暂无记录</div>';
+        return;
+    }
+    
+    let html = '';
+    window.accessRecordsList.slice().reverse().forEach((record, index) => {
+        const icon = record.action === '人脸信息录入' ? '📸' : '🚪';
+        const bgColor = record.action === '人脸信息录入' ? 'rgba(0, 168, 107, 0.1)' : 'rgba(0, 61, 130, 0.1)';
+        
+        html += `
+            <div style="padding: 1rem; margin-bottom: 0.8rem; background: ${bgColor}; border-left: 4px solid #003d82; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span style="font-weight: 600; font-size: 14px;">${icon} ${record.action}</span>
+                    <span style="color: #666; font-size: 13px;">${record.date} ${record.time}</span>
+                </div>
+                <div style="color: #999; font-size: 13px;">姓名：${record.name}</div>
+            </div>
+        `;
+    });
+    
+    recordsDiv.innerHTML = html;
+}
+
+// 上交手机
+function submitPhone() {
+    const lockerNo = 'A-' + Math.floor(Math.random() * 50 + 1);
+    document.getElementById('phoneStatus').textContent = '已上交';
+    document.getElementById('phoneStatus').style.color = 'var(--warning)';
+    document.getElementById('phoneLocker').textContent = lockerNo;
+    alert(`✅ 手机已上交\n存放柜号: ${lockerNo}\n请妥善保管凭证`);
+}
+
+// 领取手机
+function retrievePhone() {
+    document.getElementById('phoneStatus').textContent = '在手';
+    document.getElementById('phoneStatus').style.color = 'var(--success)';
+    document.getElementById('phoneLocker').textContent = '-';
+    alert('✅ 手机已领取\n请检查完好无损');
+}
+
+// 浏览资料
+function browseMaterials() {
+    alert('📚 正在加载学习资料...\n\n提供的资料类型:\n- PDF文档\n- 视频教程\n- PPT课件\n- 练习题库');
+}
+
+// 生成课程安排表
+function generateScheduleTable() {
+    const tableBody = document.getElementById('scheduleTableBody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    // 从今天开始，往后推4天（共5天）
+    const today = new Date();
+    const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const schedules = ['理论', '实作'];
+    
+    for (let i = 0; i < 5; i++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() + i);
+        
+        const dateStr = date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const weekDay = weekDays[date.getDay()];
+        const morning = schedules[i % 2];
+        const afternoon = schedules[(i + 1) % 2];
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${dateStr}</td>
+            <td>${weekDay}</td>
+            <td>${morning}</td>
+            <td>${afternoon}</td>
+        `;
+        tableBody.appendChild(tr);
+    }
+}
+
+// 座位分配
+function allocateSeat() {
+    const studentName = document.getElementById('seatStudentName').value.trim();
+    
+    if (!studentName) {
+        alert('请输入学员姓名!');
+        return;
+    }
+    
+    // 检查该学员是否已分配座位
+    if (allocatedSeats[studentName]) {
+        const seatNum = allocatedSeats[studentName];
+        document.getElementById('mySeatNumber').textContent = seatNum;
+        document.getElementById('seatStatus').textContent = `座位号: ${seatNum}`;
+        document.getElementById('seatStudentName').value = '';
+        generateSeatMap();
+        alert(`✅ 该学员已分配座位: ${seatNum}`);
+        return;
+    }
+    
+    if (nextSeatNumber > 40) {
+        alert('⚠️ 所有座位已分配完毕！');
+        return;
+    }
+    
+    // 分配新座位
+    allocatedSeats[studentName] = nextSeatNumber;
+    document.getElementById('mySeatNumber').textContent = nextSeatNumber;
+    document.getElementById('seatStatus').textContent = `座位号: ${nextSeatNumber} | 姓名: ${studentName}`;
+    
+    alert(`✅ 座位分配成功!\n姓名: ${studentName}\n座位号: ${nextSeatNumber}`);
+    
+    nextSeatNumber++;
+    
+    // 生成座位地图
+    generateSeatMap();
+    document.getElementById('seatStudentName').value = '';
+}
+
+// 生成座位地图
+function generateSeatMap() {
+    const seatMap = document.getElementById('seatMap');
+    seatMap.innerHTML = '';
+    
+    // 创建反向映射：座位号->姓名
+    const seatToName = {};
+    Object.keys(allocatedSeats).forEach(name => {
+        seatToName[allocatedSeats[name]] = name;
+    });
+    
+    for (let i = 1; i <= 40; i++) {
+        const seat = document.createElement('div');
+        seat.className = 'seat';
+        
+        if (seatToName[i]) {
+            // 已分配的座位显示红色
+            seat.style.background = '#dc3545';
+            seat.style.borderColor = '#dc3545';
+            seat.style.color = 'white';
+            seat.title = `座位 ${i} - ${seatToName[i]}`;
+        } else if (i === nextSeatNumber) {
+            // 当前分配的座位显示蓝色
+            seat.style.background = 'var(--primary)';
+            seat.style.borderColor = 'var(--primary)';
+            seat.style.color = 'white';
+        }
+        
+        seat.innerHTML = `<div class="seat-number">${i}</div>`;
+        seatMap.appendChild(seat);
+    }
+}
+
+// 下载座位表
+function downloadSeatList() {
+    if (nextSeatNumber <= 1) {
+        alert('⚠️ 还没有分配座位！');
+        return;
+    }
+    alert(`📋 您的座位号: ${nextSeatNumber - 1}\n座位表已下载\n文件名: 座位分配表.xlsx`);
+}
+
+// 设置评分
+function setRating(rating) {
+    currentRating = rating;
+    const stars = document.querySelectorAll('#reviewRating .star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.style.opacity = '1';
+            star.style.color = '#ffc107';
+        } else {
+            star.style.opacity = '0.3';
+        }
+    });
+}
+
+// 提交心得
+function submitReview() {
+    const content = document.getElementById('reviewContent').value;
+    
+    if (!content) {
+        alert('请填写分享内容!');
+        return;
+    }
+    
+    const review = {
+        content: content,
+        rating: currentRating,
+        date: new Date().toLocaleDateString('zh-CN'),
+        id: Date.now()
+    };
+    
+    reviews.unshift(review);
+    alert('✅ 心得分享已发布');
+    document.getElementById('reviewForm').reset();
+    currentRating = 0;
+    
+    // 重置星级
+    document.querySelectorAll('#reviewRating .star').forEach(star => {
+        star.style.opacity = '0.3';
+    });
+    
+    displayReviews();
+}
+
+// 显示历史分享
+function displayReviews() {
+    const reviewList = document.getElementById('reviewList');
+    reviewList.innerHTML = '';
+    
+    reviews.forEach(review => {
+        const reviewDiv = document.createElement('div');
+        reviewDiv.className = 'review-card';
+        reviewDiv.style.marginBottom = '1rem';
+        
+        let starsHtml = '';
+        for (let i = 0; i < 5; i++) {
+            starsHtml += i < review.rating ? '⭐' : '☆';
+        }
+        
+        reviewDiv.innerHTML = `
+            <div class="review-header">
+                <div class="review-author">
+                    <div class="review-avatar">我</div>
+                    <div>
+                        <div style="font-weight: 600;">学员</div>
+                        <div class="review-date">${review.date}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin: 0.8rem 0; font-size: 1.2rem; color: #ffc107;">
+                ${starsHtml}
+            </div>
+            <div class="review-content">${review.content}</div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 1rem; padding: 0.6rem;" onclick="deleteReview(${review.id})">🗑️ 删除心得</button>
+        `;
+        
+        reviewList.appendChild(reviewDiv);
+    });
+}
+
+// 删除心得
+function deleteReview(id) {
+    reviews = reviews.filter(review => review.id !== id);
+    alert('✅ 心得已删除');
+    displayReviews();
+}
+
+// 保存个人信息
+function savePersonalInfo() {
+    const name = document.getElementById('editName').value;
+    const phone = document.getElementById('editPhone').value;
+    const unit = document.getElementById('editUnit').value;
+    
+    if (!name || !phone) {
+        alert('请填写必填信息!');
+        return;
+    }
+    
+    // 更新studentData对象
+    studentData.name = name;
+    studentData.phone = phone;
+    studentData.unit = unit;
+    
+    // 更新欢迎消息
+    const surname = name.charAt(0);
+    document.getElementById('userAvatar').textContent = surname;
+    document.getElementById('welcomeName').textContent = surname + '学员';
+    
+    // 更新考试信息显示
+    updateExamInfo();
+    
+    alert('✅ 个人信息已保存\n名字已同步到报到注册信息');
+    document.getElementById('editForm').reset();
+}
+
+// 显示请假记录
+function displayLeaveRecords() {
+    const leaveRecords = document.getElementById('leaveRecords');
+    leaveRecords.innerHTML = '';
+    
+    leaveRecordList.forEach(record => {
+        const recordDiv = document.createElement('div');
+        recordDiv.className = 'review-card';
+        recordDiv.style.marginBottom = '1rem';
+        recordDiv.style.borderLeft = record.status === '已通过' ? '4px solid var(--success)' : '4px solid var(--danger)';
+        
+        recordDiv.innerHTML = `
+            <div class="review-header">
+                <div>
+                    <div style="font-weight: 600;">${record.type}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                        ${record.startDate} 至 ${record.endDate} (${record.days}天)
+                    </div>
+                </div>
+                <div style="color: ${record.statusColor}; font-weight: 600;">${record.status}</div>
+            </div>
+            <div style="font-size: 0.9rem; margin: 0.8rem 0; color: var(--text-secondary);">
+                审批人: ${record.approver}
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-primary);">
+                原因: ${record.reason}
+            </div>
+        `;
+        
+        leaveRecords.appendChild(recordDiv);
+    });
+}
+
+// 发送消息
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    const chatMessages = document.getElementById('chatMessages');
+    
+    // 用户消息
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-message user';
+    userMsg.innerHTML = `
+        <div class="chat-bubble">${message}</div>
+        <div class="chat-avatar">我</div>
+    `;
+    chatMessages.appendChild(userMsg);
+    
+    input.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // 模拟客服回复
+    setTimeout(() => {
+        const serviceMsg = document.createElement('div');
+        serviceMsg.className = 'chat-message';
+        serviceMsg.innerHTML = `
+            <div class="chat-avatar">客</div>
+            <div class="chat-bubble">感谢您的咨询,我们会尽快为您处理! 😊</div>
+        `;
+        chatMessages.appendChild(serviceMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500);
+}
+
+// 页面初始化
+window.addEventListener('load', function() {
+    // 初始化座位地图
+    generateSeatMap();
+    
+    // 初始化课程安排
+    generateScheduleTable();
+    
+    // 初始化各项数据显示
+    document.getElementById('attendanceDays').textContent = attendanceCount;
+    document.getElementById('leaveDaysDisplay').textContent = '0';
+    document.getElementById('breakfastCount').textContent = mealRecords.breakfast;
+    document.getElementById('lunchCount').textContent = mealRecords.lunch;
+    document.getElementById('dinnerCount').textContent = mealRecords.dinner;
+    
+    // 启动12:00 PM打卡状态重置定时器
+    startDailyCheckinReset();
+    
+    console.log('铁路培训基地学员管理系统已加载');
+});
+
+// 每日12:00 PM打卡状态重置
+function startDailyCheckinReset() {
+    setInterval(function() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        
+        // 当时间到达12:00 PM时重置
+        if (hours === 12 && minutes === 0) {
+            document.getElementById('todayAttendance').textContent = '未打卡';
+            document.getElementById('todayAttendance').style.color = '#dc3545';
+            console.log('✓ 打卡状态已重置为未打卡');
+        }
+    }, 60000); // 每分钟检查一次
+}
+</script>
